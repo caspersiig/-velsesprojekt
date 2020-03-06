@@ -1,6 +1,11 @@
-{"ider":[{"id":"1234567890123456",
-    "ercheckin":false,
-    "historie":[
-        "københavn-regstrup 5 kl 12414123",
-        "regstrup-københavn 1 kl 41233232"
-    ]}]}
+{
+    "ider": [{
+        "id": "4571172639441359",
+        "ercheckin": false,
+        "historie": []
+    }, {
+        "id": "7676767676767676",
+        "ercheckin": true,
+        "historie": ["Checkedind København-Kalundborg 5  2020-03-06T13:40:13.152Z", "Checkedout København-Kalundborg 5  2020-03-06T13:40:51.075Z"]
+    }]
+}

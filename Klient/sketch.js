@@ -23,7 +23,11 @@ function setup() {
             case 3:
                 alert("Rejsekortet er lavet");
                 break;
+                case 4:
+                    alert("rejsekortet er nu lavet");
+                    break;
             default:
+                console.log("dillermand");
                 break;
         }
     })
@@ -43,6 +47,7 @@ function draw() {
 }
 
 function keyPressed() {
+    // sender bare de forskellige værdier
     if (keyCode === ENTER && inp.value().length == 16) {
         d = new Date();
         data = {
