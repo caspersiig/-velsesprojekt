@@ -2,24 +2,63 @@ var express = require('express');
 var app = express();
 var server = app.listen(3000);
 app.use(express.static('Klient'));
-
-var socket = require('socket.io'); 
+var socket = require('socket.io');
 var io = socket(server);
-
+var fs = require('fs');
+var database = JSON.parse(fs.readFileSync('database.json', 'utf8'));
 
 io.sockets.on('connection', newConnection);
-io.sockets.on('disconnection', newDisconnect);
 
+function newConnection(socket) {
+    console.log("toget" + socket.id + "Har lige Connected");
 
-function newConnection(socket){
-    console.log(socket.id + "Har lige Connected");
-    // sockets.on('Nyspiller', () =>{
-    
-    // });
+    socket.on("idtilcheck", (data) => {
+        // kontrollere om idet er i systemet og hvis den er så ser den checkin statuset på kortet og gør det sætter den til det omvendte :D
+        for (let i = 0; i < database.ider.length; i++) {
+            if (data.id == database.ider[i].id) {
+                if (database.ider[i].ercheckin == false) {
+                    socket.emit("acceptered", 1);
+                    database.ider[i].ercheckin = true;
+                    fs.writeFileSync("database.json", JSON.stringify(database));
+                } else {
+                    socket.emit("acceptered", 2);
+                    database.ider[i].ercheckin = false;
+                    database.ider[i].histore[database.ider[i].histore.length] = "checkout" + data.time;
+                    fs.writeFileSync("database.json", JSON.stringify(database));
+                }
+                
+            }
+        }
+    });
+    socket.on("idtilregistering", (data) => {
+        //kontrollere om idet er taget hvis ikke så laver den ny id hvis den er så skriver det som en fejl
+        let erbrugt = false;
+        for (let i = 0; i < database.ider.length; i++) {
+            if (database.ider[i].id == data) {
+                erbrugt = true;
+            }
+        }
+        if (erbrugt == false) {
+            database.ider[database.ider.length] = {
+                "id": data,
+                "ercheckin": false
+            }
+            fs.writeFileSync("database.json", JSON.stringify(database));
+        }else{
+            socket.emit("acceptered",3);
+        }
+
+    });
+    //er functionen der bliver kaldt når klientet laver sit navn
+    // det er mening navnt/id'et skal være tog strækning efterfølgt af hvilken et af togende
+    socket.on("Tognavn", (data) => {
+    socket.id = data;
+    })
+
+    socket.on('disconnect', newDisconnect);
 }
 
-function newDisconnect(socket){
-console.log(socket.id + "Har lige disconnected");
+function newDisconnect(socket) {
+    console.log("toget " + socket.id + " har lige Disconnected");
+
 }
-
-
